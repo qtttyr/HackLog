@@ -12,6 +12,28 @@ import { BrainstormPage } from '../features/brainstorm/brainstorm-page'
 import { SettingsPage } from '../features/settings/settings-page'
 import { useSession } from '../hooks/use-session'
 
+function RootRoute() {
+  const { data: session, isLoading } = useSession()
+
+  if (isLoading) {
+    return null
+  }
+
+  // If not logged in, go to landing
+  if (!session) {
+    return <Navigate to="/" replace />
+  }
+
+  // If logged in, check onboarding
+  const onboardingCompleted = localStorage.getItem('onboarding_completed')
+  if (!onboardingCompleted) {
+    return <Navigate to="/onboarding" replace />
+  }
+
+  // If logged in and onboarded, go to dashboard
+  return <Navigate to="/dashboard" replace />
+}
+
 function ProtectedRoute() {
   const { data: session, isLoading } = useSession()
 
@@ -20,7 +42,7 @@ function ProtectedRoute() {
   }
 
   if (!session) {
-    return <Navigate to="/auth" replace />
+    return <Navigate to="/" replace />
   }
 
   return <Outlet />
@@ -46,10 +68,16 @@ function OnboardingGuard() {
 export function AppRouter() {
   return (
     <Routes>
+      {/* Smart root redirect - redirects based on session */}
+      <Route index element={<RootRoute />} />
+
+      {/* Public routes for non-authenticated users */}
       <Route element={<PublicLayout />}>
-        <Route index element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
       </Route>
+
+      {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route element={<WorkspaceLayout />}>
           <Route path="/onboarding" element={<OnboardingPage />} />
@@ -63,6 +91,8 @@ export function AppRouter() {
           </Route>
         </Route>
       </Route>
+
+      {/* Catch all - redirect to root */}
       <Route path="*" element={<Navigate replace to="/" />} />
     </Routes>
   )

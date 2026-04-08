@@ -18,7 +18,6 @@ export function LandingPage() {
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link to="/auth" className="btn-primary">Start now</Link>
-            <Link to="/dashboard" className="btn-ghost">View workspace</Link>
           </div>
         </SectionCard>
         <SectionCard title="Built for trust at first glance." hint="Comfort-first UX" className="bg-[#ffd36e]">
