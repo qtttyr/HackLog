@@ -71,38 +71,38 @@ export function SettingsPage() {
     }, 1500)
   }
 
-  return (
+   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Team Settings</h1>
           <p className="text-sm text-gray-600">Manage your team and roles</p>
         </div>
-        <Button onClick={assignRolesWithAI} disabled={isAssigning}>
+        <Button onClick={assignRolesWithAI} disabled={isAssigning} className="md:whitespace-nowrap">
           {isAssigning ? '🤖 Assigning...' : <><Sparkles className="h-4 w-4 inline mr-1" />AI Assign Roles</>}
         </Button>
       </div>
 
       <SectionCard title="Team Members" className="bg-white">
-        <div className="space-y-4">
+        <div className="space-y-3">
           {members.map(member => (
-            <div key={member.id} className="flex items-center justify-between rounded-lg border-2 border-gray-100 p-4">
-              <div className="flex items-center gap-4">
+            <div key={member.id} className="flex flex-col gap-3 rounded-lg border-2 border-gray-200 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Avatar name={member.name} size="md" />
-                <div>
-                  <p className="font-medium">{member.name}</p>
-                  <p className="text-sm text-gray-500">{member.email}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-sm truncate">{member.name}</p>
+                  <p className="text-xs text-gray-500 truncate">{member.email}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 {(() => {
                   const RoleIcon = roleOptions.find(r => r.value === member.role)?.icon || Star
-                  return <RoleIcon className="h-5 w-5" />
+                  return <RoleIcon className="h-5 w-5 flex-shrink-0" />
                 })()}
                 <select
                   value={member.role}
                   onChange={(e) => updateRole(member.id, e.target.value as TeamMember['role'])}
-                  className="rounded-lg border-2 border-black px-3 py-2 font-medium"
+                  className="rounded-lg border-2 border-black px-2 py-1.5 md:px-3 md:py-2 font-medium text-sm whitespace-nowrap flex-shrink-0"
                 >
                   {roleOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>

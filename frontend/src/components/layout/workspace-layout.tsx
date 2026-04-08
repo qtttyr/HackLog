@@ -84,7 +84,7 @@ function BottomNav() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t-2 border-black bg-white md:hidden gap-1 px-1">
+      <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t-2 border-black bg-white md:hidden px-0">
         {bottomNavLinks.map((link) => {
           const Icon = link.icon
           const isActive = location.pathname === link.to
@@ -92,7 +92,7 @@ function BottomNav() {
             <NavLink
               key={link.to}
               to={link.to}
-              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-all border-2 ${
+              className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-all border-2 mx-0.5 rounded-lg ${
                 isActive
                   ? 'border-black bg-[#c7ff66] text-black font-bold'
                   : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300'
@@ -105,7 +105,7 @@ function BottomNav() {
         })}
         <button
           onClick={() => setMoreOpen(!moreOpen)}
-          className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full rounded-lg transition-all border-2 ${
+          className={`flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-all border-2 mx-0.5 rounded-lg ${
             moreOpen
               ? 'border-black bg-[#ffd9f3] text-black font-bold'
               : 'border-transparent text-gray-600 hover:text-black hover:border-gray-300'
@@ -164,7 +164,7 @@ export function WorkspaceLayout() {
   return (
     <div className="page-shell">
       {!isOnboarding && <MobileHeader />}
-      <div className={`mx-auto flex min-h-screen max-w-7xl flex-col px-4 py-4 md:px-6 ${!isOnboarding ? 'pb-20 md:pb-4 pt-12 md:pt-4' : ''}`}>
+      <div className={`mx-auto flex min-h-screen max-w-7xl flex-col px-3 py-3 md:px-6 md:py-4 ${!isOnboarding ? 'pb-20 md:pb-4 pt-12 md:pt-4' : ''}`}>
         <header className="brutal-card mb-6 hidden flex-wrap items-center justify-between gap-4 p-4 md:flex">
           <BrandMark />
           <div className="flex flex-wrap items-center gap-3">

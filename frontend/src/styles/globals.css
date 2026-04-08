@@ -92,7 +92,7 @@ button, input { font: inherit; }
 .nav-link.active { background: #c7ff66; }
 .btn-primary:disabled, .btn-ghost:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 
-.input {
+.input, select {
   width: 100%;
   min-height: 54px;
   box-sizing: border-box;
@@ -100,9 +100,10 @@ button, input { font: inherit; }
   border-radius: 18px;
   background: #ffffff;
   padding: 0.95rem 1rem;
+  font: inherit;
 }
 
-.input:focus {
+.input:focus, select:focus {
   outline: none;
   background: #fff8c7;
 }
@@ -115,7 +116,7 @@ button, input { font: inherit; }
     font-size: 0.9rem;
     border: 2px solid var(--line);
   }
-  .input {
+  .input, select {
     min-height: 44px;
     padding: 0.8rem 0.9rem;
     font-size: 16px;
