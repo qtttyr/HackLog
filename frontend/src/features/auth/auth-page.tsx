@@ -10,13 +10,30 @@ export function AuthPage() {
   const navigate = useNavigate()
   const setSessionEmail = useUiStore((state) => state.setSessionEmail)
   const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [message, setMessage] = useState('Use one magic link for secure login or registration.')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
 
-  async function handleContinue() {
-    const { error } = await supabase.auth.signInWithOtp({ email })
-    setSessionEmail(email)
-    setMessage(error ? error.message : 'Magic link sent. You can continue to onboarding right away.')
+  async function handleSubmit() {
+    if (mode === 'register') {
+      const { error, data } = await supabase.auth.signUp({ email, password })
+      if (error) {
+        setMessage(error.message)
+      } else if (data.user) {
+        setSessionEmail(email)
+        navigate('/onboarding')
+      }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setMessage(error.message)
+      } else {
+        setSessionEmail(email)
+        const onboardingCompleted = localStorage.getItem('onboarding_completed')
+        navigate(onboardingCompleted ? '/dashboard' : '/onboarding')
+      }
+    }
   }
 
   return (
@@ -26,13 +43,20 @@ export function AuthPage() {
           <Button variant={mode === 'login' ? 'primary' : 'ghost'} onClick={() => setMode('login')}>Login</Button>
           <Button variant={mode === 'register' ? 'primary' : 'ghost'} onClick={() => setMode('register')}>Register</Button>
         </div>
-        <label className="eyebrow mt-6 block">Email</label>
-        <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@team.com" />
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Button onClick={handleContinue}>{mode === 'login' ? 'Send login link' : 'Create account'}</Button>
-          <Button variant="ghost" onClick={() => navigate('/onboarding')}>Continue to onboarding</Button>
+        {mode === 'register' && (
+          <>
+            <label className="eyebrow mt-6 block">Name</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+          </>
+        )}
+        <label className={`eyebrow mt-${mode === 'register' ? '4' : '6'} block`}>Email</label>
+        <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@team.com" type="email" />
+        <label className="eyebrow mt-4 block">Password</label>
+        <Input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" type="password" />
+        <div className="mt-5">
+          <Button onClick={handleSubmit}>{mode === 'login' ? 'Login' : 'Create account'}</Button>
         </div>
-        <p className="mt-4 text-[0.95rem] leading-6 text-slate-700">{message}</p>
+        {message && <p className="mt-4 text-[0.95rem] leading-6 text-slate-700">{message}</p>}
       </SectionCard>
       <SectionCard title="Made to feel easy under pressure." hint="What you get" className="bg-[#c7e7ff]">
         <ul className="grid gap-3 md:grid-cols-2">

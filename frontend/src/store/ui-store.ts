@@ -29,6 +29,10 @@ const seed: TeamSnapshot = {
     { id: '1', content: 'Position HackLog as a calm command center.', createdAt: '2m ago' },
     { id: '2', content: 'Focus demo around live momentum, not raw task count.', createdAt: '8m ago' },
   ],
+  ideas: [
+    { id: '1', title: 'AI Code Review', description: 'Real-time analysis', votes: 12, createdBy: 'Ada' },
+    { id: '2', title: 'Collaborative Board', description: 'Visual workspace', votes: 8, createdBy: 'Mika' },
+  ],
 }
 
 export const useUiStore = create<UiState>((set) => ({

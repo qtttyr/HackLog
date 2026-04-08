@@ -4,10 +4,12 @@ import { WorkspaceLayout } from '../components/layout/workspace-layout'
 import { AuthPage } from '../features/auth/auth-page'
 import { LandingPage } from '../features/landing/landing-page'
 import { BoardPage } from '../features/board/board-page'
-import { DecisionsPage } from '../features/decisions/decisions-page'
 import { DashboardPage } from '../features/dashboard/dashboard-page'
 import { OnboardingPage } from '../features/onboarding/onboarding-page'
-import { PitchPage } from '../features/pitch/pitch-page'
+import { TasksPage } from '../features/tasks/tasks-page'
+import { RoadmapPage } from '../features/roadmap/roadmap-page'
+import { BrainstormPage } from '../features/brainstorm/brainstorm-page'
+import { SettingsPage } from '../features/settings/settings-page'
 import { useSession } from '../hooks/use-session'
 
 function ProtectedRoute() {
@@ -54,8 +56,10 @@ export function AppRouter() {
           <Route element={<OnboardingGuard />}>
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/board" element={<BoardPage />} />
-            <Route path="/decisions" element={<DecisionsPage />} />
-            <Route path="/pitch" element={<PitchPage />} />
+            <Route path="/tasks" element={<TasksPage />} />
+            <Route path="/roadmap" element={<RoadmapPage />} />
+            <Route path="/brainstorm" element={<BrainstormPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
       </Route>
