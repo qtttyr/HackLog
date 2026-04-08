@@ -14,21 +14,9 @@ interface Task {
   type: 'team' | 'personal'
 }
 
-const mockTeamTasks: Task[] = [
-  { id: '1', title: 'Set up project structure', status: 'done', assignee: 'Alex', type: 'team' },
-  { id: '2', title: 'Design database schema', status: 'done', assignee: 'Maria', type: 'team' },
-  { id: '3', title: 'Create API endpoints', status: 'doing', assignee: 'Alex', type: 'team' },
-  { id: '4', title: 'Build authentication flow', status: 'doing', assignee: 'Maria', type: 'team' },
-  { id: '5', title: 'Write unit tests', status: 'todo', assignee: 'Alex', type: 'team' },
-  { id: '6', title: 'Deploy to production', status: 'todo', assignee: 'Unknown', type: 'team' },
-]
+const mockTeamTasks: Task[] = []
 
-const mockPersonalTasks: Task[] = [
-  { id: '7', title: 'Review API documentation', status: 'done', createdAt: '2h ago', type: 'personal' },
-  { id: '8', title: 'Practice demo pitch', status: 'doing', createdAt: '30m ago', type: 'personal' },
-  { id: '9', title: 'Fix login bug', status: 'todo', createdAt: 'just now', type: 'personal' },
-  { id: '10', title: 'Write README section', status: 'todo', createdAt: 'just now', type: 'personal' },
-]
+const mockPersonalTasks: Task[] = []
 
 type TabType = 'team' | 'personal'
 

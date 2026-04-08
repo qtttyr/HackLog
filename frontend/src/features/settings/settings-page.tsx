@@ -13,12 +13,7 @@ interface TeamMember {
   avatar?: string
 }
 
-const mockMembers: TeamMember[] = [
-  { id: '1', name: 'Alex Chen', email: 'alex@team.com', role: 'leader', roleLabel: 'Team Lead' },
-  { id: '2', name: 'Maria Garcia', email: 'maria@team.com', role: 'developer', roleLabel: 'Lead Developer' },
-  { id: '3', name: 'John Smith', email: 'john@team.com', role: 'designer', roleLabel: 'UI/UX Designer' },
-  { id: '4', name: 'Sarah Lee', email: 'sarah@team.com', role: 'pitch', roleLabel: 'Pitch Specialist' },
-]
+const mockMembers: TeamMember[] = []
 
 const roleOptions: { value: TeamMember['role']; label: string; icon: typeof Crown }[] = [
   { value: 'leader', label: 'Leader', icon: Crown },
@@ -86,7 +81,7 @@ export function SettingsPage() {
       <SectionCard title="Team Members" className="bg-white">
         <div className="space-y-3">
           {members.map(member => (
-            <div key={member.id} className="flex flex-col gap-3 rounded-lg border-2 border-gray-200 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
+            <div key={member.id} className="flex flex-col gap-2 rounded-lg border-2 border-gray-200 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Avatar name={member.name} size="md" />
                 <div className="min-w-0 flex-1">
@@ -94,7 +89,7 @@ export function SettingsPage() {
                   <p className="text-xs text-gray-500 truncate">{member.email}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {(() => {
                   const RoleIcon = roleOptions.find(r => r.value === member.role)?.icon || Star
                   return <RoleIcon className="h-5 w-5 flex-shrink-0" />
@@ -102,7 +97,8 @@ export function SettingsPage() {
                 <select
                   value={member.role}
                   onChange={(e) => updateRole(member.id, e.target.value as TeamMember['role'])}
-                  className="rounded-lg border-2 border-black px-2 py-1.5 md:px-3 md:py-2 font-medium text-sm whitespace-nowrap flex-shrink-0"
+                  className="rounded-lg border-2 border-black px-1.5 py-1 md:px-2 md:py-1.5 font-medium text-xs md:text-sm appearance-none bg-white bg-no-repeat flex-shrink-0 max-w-xs"
+                  style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23111%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E")', paddingRight: '1.5rem', backgroundPosition: 'right 0.4rem center' }}
                 >
                   {roleOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>

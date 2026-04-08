@@ -15,24 +15,14 @@ type UiState = {
 
 const seed: TeamSnapshot = {
   id: 'team-01',
-  name: 'Null Pointer',
-  hackathonName: 'HackLog Launch Jam',
-  inviteCode: 'GREEN42',
-  endsAt: '2026-04-02T18:00:00.000Z',
-  membersOnline: 3,
-  tasks: [
-    { id: '1', title: 'Wire realtime board', status: 'doing', assignee: 'Ada' },
-    { id: '2', title: 'Draft pitch story arc', status: 'todo', assignee: 'Mika' },
-    { id: '3', title: 'Polish landing shell', status: 'done', assignee: 'Noor' },
-  ],
-  decisions: [
-    { id: '1', content: 'Position HackLog as a calm command center.', createdAt: '2m ago' },
-    { id: '2', content: 'Focus demo around live momentum, not raw task count.', createdAt: '8m ago' },
-  ],
-  ideas: [
-    { id: '1', title: 'AI Code Review', description: 'Real-time analysis', votes: 12, createdBy: 'Ada' },
-    { id: '2', title: 'Collaborative Board', description: 'Visual workspace', votes: 8, createdBy: 'Mika' },
-  ],
+  name: '',
+  hackathonName: '',
+  inviteCode: '',
+  endsAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+  membersOnline: 0,
+  tasks: [],
+  decisions: [],
+  ideas: [],
 }
 
 export const useUiStore = create<UiState>((set) => ({

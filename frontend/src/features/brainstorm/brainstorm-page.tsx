@@ -10,13 +10,7 @@ interface Idea {
   tags: string[]
 }
 
-const mockIdeas: Idea[] = [
-  { id: '1', title: 'AI-Powered Code Review', description: 'Real-time code analysis that suggests improvements during hackathon', votes: 12, tags: ['AI', 'Developer Tools'] },
-  { id: '2', title: 'Collaborative Whiteboard', description: 'Visual workspace for brainstorming with AI-suggested layouts', votes: 8, tags: ['Collaboration', 'Design'] },
-  { id: '3', title: 'Pitch Deck Generator', description: 'AI generates pitch deck from your project description', votes: 15, tags: ['AI', 'Presentation'] },
-  { id: '4', title: 'Live Demo Recorder', description: 'Record and share demos automatically with timestamped notes', votes: 6, tags: ['Demo', 'Collaboration'] },
-  { id: '5', title: 'Team Energy Tracker', description: 'Gamify team progress with points, streaks, and achievements', votes: 9, tags: ['Gamification', 'Team'] },
-]
+const mockIdeas: Idea[] = []
 
 export function BrainstormPage() {
   const [ideas, setIdeas] = useState(mockIdeas)

@@ -10,49 +10,7 @@ interface RoadmapNode {
   children: RoadmapNode[]
 }
 
-const mockRoadmap: RoadmapNode[] = [
-  {
-    id: '1',
-    title: 'Project Setup',
-    status: 'done',
-    children: [
-      { id: '1-1', title: 'Initialize repository', status: 'done', children: [] },
-      { id: '1-2', title: 'Set up CI/CD', status: 'done', children: [] },
-      { id: '1-3', title: 'Configure environment', status: 'done', children: [] },
-    ]
-  },
-  {
-    id: '2',
-    title: 'Core Features',
-    status: 'doing',
-    children: [
-      { id: '2-1', title: 'User authentication', status: 'done', children: [] },
-      { id: '2-2', title: 'Dashboard', status: 'doing', children: [] },
-      { id: '2-3', title: 'Task management', status: 'todo', children: [] },
-      { id: '2-4', title: 'Real-time sync', status: 'todo', children: [] },
-    ]
-  },
-  {
-    id: '3',
-    title: 'AI Features',
-    status: 'todo',
-    children: [
-      { id: '3-1', title: 'Roadmap generation', status: 'todo', children: [] },
-      { id: '3-2', title: 'Idea brainstorming', status: 'todo', children: [] },
-      { id: '3-3', title: 'Role assignment', status: 'todo', children: [] },
-    ]
-  },
-  {
-    id: '4',
-    title: 'Polish & Launch',
-    status: 'todo',
-    children: [
-      { id: '4-1', title: 'UI refinement', status: 'todo', children: [] },
-      { id: '4-2', title: 'Performance optimization', status: 'todo', children: [] },
-      { id: '4-3', title: 'Deploy & test', status: 'todo', children: [] },
-    ]
-  },
-]
+const mockRoadmap: RoadmapNode[] = []
 
 function RoadmapItem({ node, depth = 0 }: { node: RoadmapNode; depth?: number }) {
   const [expanded, setExpanded] = useState(true)
