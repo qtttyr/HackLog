@@ -21,7 +21,7 @@ function RootRoute() {
 
   // If not logged in, go to landing
   if (!session) {
-    return <Navigate to="/" replace />
+    return <Navigate to="/landing" replace />
   }
 
   // If logged in, check onboarding

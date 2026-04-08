@@ -7,6 +7,7 @@ type UiState = {
   team: TeamSnapshot
   setMode: (mode: 'solo' | 'team') => void
   setSessionEmail: (email: string) => void
+  clearTeam: () => void
   createTeam: (name: string, hackathonName: string) => void
   joinTeam: (inviteCode: string) => void
   setTaskStatus: (taskId: string, status: TaskStatus) => void
@@ -31,6 +32,7 @@ export const useUiStore = create<UiState>((set) => ({
   team: seed,
   setMode: (mode) => set({ mode }),
   setSessionEmail: (sessionEmail) => set({ sessionEmail }),
+  clearTeam: () => set({ team: seed, sessionEmail: '', mode: 'team' }),
   createTeam: (name, hackathonName) => set((state) => ({ team: { ...state.team, name, hackathonName } })),
   joinTeam: (inviteCode) => set((state) => ({ mode: 'team', team: { ...state.team, inviteCode } })),
   setTaskStatus: (taskId, status) =>

@@ -31,12 +31,14 @@ const moreNavLinks = [
 
 function ProfileMenu() {
   const navigate = useNavigate()
+  const clearTeam = useUiStore((state) => state.clearTeam)
   const [open, setOpen] = useState(false)
 
   async function handleLogout() {
     await supabase.auth.signOut()
     localStorage.removeItem('onboarding_completed')
-    navigate('/auth')
+    clearTeam()
+    navigate('/')
   }
 
   return (
