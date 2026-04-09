@@ -10,14 +10,27 @@ export function useSession() {
       const { data } = await supabase.auth.getSession()
       const token = data.session?.access_token
       if (!token) return null
+      
+      // Try to verify with backend, but gracefully fallback if backend is unavailable
       try {
         return await apiFetch<VerifyResponse>('/api/auth/verify', {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         })
-      } catch {
-        return { email: data.session?.user?.email ?? 'User', is_valid: true }
+      } catch (error) {
+        // If backend is unavailable, use session info from Supabase auth
+        const user = data.session?.user
+        if (user) {
+          return {
+            id: user.id,
+            email: user.email ?? 'User',
+            is_valid: true,
+          }
+        }
+        return null
       }
     },
+    retry: 1, // Only retry once to avoid repeated errors
+    staleTime: 60000, // Cache for 1 minute
   })
 }

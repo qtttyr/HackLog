@@ -15,7 +15,7 @@ interface TeamMember {
 
 export function OnboardingPage() {
   const navigate = useNavigate()
-  const { team, createTeam } = useUiStore()
+  const { team, createTeam, setHackathonInfo, addTeamMember } = useUiStore()
   
   const [step, setStep] = useState<Step>('team')
   const [mode, setModeLocal] = useState<'solo' | 'team'>('solo')
@@ -48,7 +48,33 @@ export function OnboardingPage() {
 
   function handleNext() {
     if (step === 'team') {
+      // Save team data
       createTeam(projectName, hackathonName)
+      
+      // Add team members to store
+      members.forEach((member) => {
+        if (member.name && member.email) {
+          addTeamMember({
+            name: member.name,
+            email: member.email,
+            role: (member.role || 'other') as 'leader' | 'developer' | 'designer' | 'pitch' | 'other',
+          })
+        }
+      })
+      
+      setStep('hackathon')
+    } else if (step === 'hackathon') {
+      // Set hackathon info (including deadline) when moving to next step
+      if (hackathonDeadline) {
+        setHackathonInfo({
+          name: hackathonName,
+          deadline: new Date(hackathonDeadline).toISOString(),
+          description: hackathonDescription,
+          link: hackathonLink,
+        })
+      }
+      
+      // Save to localStorage for backup
       localStorage.setItem('onboarding_data', JSON.stringify({
         projectName,
         mode,
@@ -59,8 +85,7 @@ export function OnboardingPage() {
         hackathonLink,
         projectIdea
       }))
-      setStep('hackathon')
-    } else if (step === 'hackathon') {
+      
       setStep('idea')
     } else if (step === 'idea') {
       setStep('ready')

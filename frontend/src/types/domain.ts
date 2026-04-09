@@ -13,6 +13,7 @@ export type TeamSnapshot = {
   tasks: Task[]
   decisions: Decision[]
   ideas: BrainstormIdea[]
+  members: TeamMember[]
 }
 
 export type TeamMember = {

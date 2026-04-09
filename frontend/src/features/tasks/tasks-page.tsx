@@ -2,72 +2,60 @@ import { useState } from 'react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { SectionCard } from '../../components/ui/section-card'
-import type { TaskStatus } from '../../types/domain'
+import { useUiStore } from '../../store/ui-store'
+import type { TaskStatus, Task } from '../../types/domain'
 import { ChevronLeft, ChevronRight, Trash2, Circle, CheckCircle, Clock } from 'lucide-react'
-
-interface Task {
-  id: string
-  title: string
-  status: TaskStatus
-  assignee?: string
-  createdAt?: string
-  type: 'team' | 'personal'
-}
-
-const mockTeamTasks: Task[] = []
-
-const mockPersonalTasks: Task[] = []
 
 type TabType = 'team' | 'personal'
 
 export function TasksPage() {
+  const { team, addTask: storeAddTask, removeTask: storeRemoveTask, setTaskStatus } = useUiStore()
   const [tab, setTab] = useState<TabType>('team')
-  const [tasks, setTasks] = useState<Task[]>([...mockTeamTasks, ...mockPersonalTasks])
   const [newTask, setNewTask] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
 
-  const currentTasks = tasks.filter(t => t.type === tab)
-  const todoTasks = currentTasks.filter(t => t.status === 'todo')
-  const doingTasks = currentTasks.filter(t => t.status === 'doing')
-  const doneTasks = currentTasks.filter(t => t.status === 'done')
+  // Filter tasks by status for display
+  const allTasks = team.tasks
+  const todoTasks = allTasks.filter((t) => t.status === 'todo')
+  const doingTasks = allTasks.filter((t) => t.status === 'doing')
+  const doneTasks = allTasks.filter((t) => t.status === 'done')
 
-  function addTask() {
+  function handleAddTask() {
     if (!newTask.trim()) return
-    setTasks([...tasks, { 
-      id: crypto.randomUUID(), 
+    storeAddTask({ 
       title: newTask, 
       status: 'todo',
-      type: tab,
-      ...(tab === 'team' && { assignee: 'You' }),
-      ...(tab === 'personal' && { createdAt: 'just now' })
-    }])
+      ...(tab === 'team' && { assignee: 'You' })
+    })
     setNewTask('')
     setShowAddForm(false)
   }
 
   function moveTask(taskId: string, direction: 'left' | 'right') {
-    setTasks(tasks.map(task => {
-      if (task.id !== taskId) return task
-      const order: TaskStatus[] = ['todo', 'doing', 'done']
-      const currentIndex = order.indexOf(task.status)
-      const newIndex = direction === 'left' ? Math.max(0, currentIndex - 1) : Math.min(2, currentIndex + 1)
-      return { ...task, status: order[newIndex] }
-    }))
+    const task = allTasks.find(t => t.id === taskId)
+    if (!task) return
+    
+    const order: TaskStatus[] = ['todo', 'doing', 'done']
+    const currentIndex = order.indexOf(task.status)
+    const newIndex = direction === 'left' ? Math.max(0, currentIndex - 1) : Math.min(2, currentIndex + 1)
+    const newStatus = order[newIndex]
+    
+    setTaskStatus(taskId, newStatus)
   }
 
   function deleteTask(taskId: string) {
-    setTasks(tasks.filter(t => t.id !== taskId))
+    storeRemoveTask(taskId)
   }
 
   function toggleStatus(taskId: string) {
-    setTasks(tasks.map(task => {
-      if (task.id !== taskId) return task
-      const next: Record<TaskStatus, TaskStatus> = { todo: 'doing', doing: 'done', done: 'todo' }
-      return { ...task, status: next[task.status] }
-    }))
+    const task = allTasks.find(t => t.id === taskId)
+    if (!task) return
+    
+    const next: Record<TaskStatus, TaskStatus> = { todo: 'doing', doing: 'done', done: 'todo' }
+    setTaskStatus(taskId, next[task.status])
   }
 
-  function TeamTaskCard({ task }: { task: Task }) {
+  const TeamTaskCard = ({ task }: { task: Task }) => {
     const statusIndex = ['todo', 'doing', 'done'].indexOf(task.status)
     const bgColor = task.status === 'done' ? 'bg-green-50' : task.status === 'doing' ? 'bg-yellow-50' : 'bg-white'
     
@@ -114,7 +102,7 @@ export function TasksPage() {
     )
   }
 
-  function PersonalTaskCard({ task }: { task: Task }) {
+  const PersonalTaskCard = ({ task }: { task: Task }) => {
     const bgColor = 
       task.status === 'done' ? 'bg-green-100' : 
       task.status === 'doing' ? 'bg-yellow-100' : 
@@ -134,12 +122,11 @@ export function TasksPage() {
             'text-gray-600'
           }`} />
         </button>
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium ${task.status === 'done' ? 'line-through text-gray-500' : ''}`}>
-            {task.title}
-          </p>
-          {task.createdAt && <p className="text-xs text-gray-500 mt-0.5">{task.createdAt}</p>}
-        </div>
+         <div className="flex-1 min-w-0">
+           <p className={`text-sm font-medium ${task.status === 'done' ? 'line-through text-gray-500' : ''}`}>
+             {task.title}
+           </p>
+         </div>
         <button 
           onClick={() => deleteTask(task.id)}
           className="flex-shrink-0 p-1 hover:bg-red-100 rounded transition-colors"
@@ -197,10 +184,10 @@ export function TasksPage() {
               onChange={(e) => setNewTask(e.target.value)} 
               placeholder={isTeamTab ? 'Task title...' : 'What do you need to do?'}
               className="flex-1"
-              onKeyPress={(e) => e.key === 'Enter' && addTask()}
+              onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
             />
             <div className="flex gap-2">
-              <Button onClick={addTask} className="whitespace-nowrap">Add</Button>
+              <Button onClick={handleAddTask} className="whitespace-nowrap">Add</Button>
               <Button variant="ghost" onClick={() => setShowAddForm(false)} className="whitespace-nowrap">Cancel</Button>
             </div>
           </div>
@@ -255,7 +242,7 @@ export function TasksPage() {
               </div>
             </div>
           )}
-          {currentTasks.length === 0 && (
+          {allTasks.length === 0 && (
             <p className="text-sm text-gray-400 text-center py-8">No tasks yet. Create one to get started!</p>
           )}
         </div>

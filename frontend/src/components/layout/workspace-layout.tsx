@@ -86,7 +86,7 @@ function BottomNav() {
 
   return (
     <>
-      <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t-2 border-black bg-white md:hidden px-0">
+      <nav className="fixed inset-x-0 bottom-0 z-50 flex h-14 items-center justify-around border-t-2 border-black bg-white md:hidden px-0 safe-area-inset-b">
         {bottomNavLinks.map((link) => {
           const Icon = link.icon
           const isActive = location.pathname === link.to
@@ -166,7 +166,7 @@ export function WorkspaceLayout() {
   return (
     <div className="page-shell">
       {!isOnboarding && <MobileHeader />}
-      <div className={`mx-auto flex min-h-screen max-w-7xl flex-col px-3 py-3 md:px-6 md:py-4 ${!isOnboarding ? 'pb-20 md:pb-4 pt-12 md:pt-4' : ''}`}>
+      <div className={`mx-auto flex min-h-screen max-w-7xl flex-col px-3 py-3 md:px-6 md:py-4 ${!isOnboarding ? 'pb-[calc(3.5rem+max(0.75rem,env(safe-area-inset-bottom)))] md:pb-4 pt-12 md:pt-4' : ''}`}>
         <header className="brutal-card mb-6 hidden flex-wrap items-center justify-between gap-4 p-4 md:flex">
           <BrandMark />
           <div className="flex flex-wrap items-center gap-3">

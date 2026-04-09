@@ -16,7 +16,15 @@ function RootRoute() {
   const { data: session, isLoading } = useSession()
 
   if (isLoading) {
-    return null
+    // Show loading state while checking session
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="space-y-4 text-center">
+          <div className="flex h-12 w-12 animate-spin rounded-full border-4 border-black border-t-[#c7ff66] mx-auto" />
+          <p className="font-medium text-gray-700">Loading your workspace...</p>
+        </div>
+      </div>
+    )
   }
 
   // If not logged in, go to landing

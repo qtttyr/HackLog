@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { Button } from '../../components/ui/button'
 import { Input } from '../../components/ui/input'
 import { SectionCard } from '../../components/ui/section-card'
-import { Crown, Code, Palette, Mic, Star, Sparkles } from 'lucide-react'
+import { useUiStore } from '../../store/ui-store'
+import { Crown, Code, Palette, Mic, Star, Sparkles, Trash2 } from 'lucide-react'
 
 interface TeamMember {
   id: string
@@ -12,8 +13,6 @@ interface TeamMember {
   roleLabel: string
   avatar?: string
 }
-
-const mockMembers: TeamMember[] = []
 
 const roleOptions: { value: TeamMember['role']; label: string; icon: typeof Crown }[] = [
   { value: 'leader', label: 'Leader', icon: Crown },
@@ -25,8 +24,11 @@ const roleOptions: { value: TeamMember['role']; label: string; icon: typeof Crow
 
 function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' | 'lg' }) {
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase()
-  const colors = ['bg-pink-200', 'bg-blue-200', 'bg-green-200', 'bg-yellow-200', 'bg-purple-200']
-  const color = colors[name.length % colors.length]
+  // Use brand colors from Brutal style instead of light grays
+  const bgColors = ['bg-[#c7ff66]', 'bg-[#ffd9f3]', 'bg-[#c7e7ff]', 'bg-[#fff8c7]', 'bg-pink-400']
+  const textColors = ['text-black', 'text-black', 'text-black', 'text-black', 'text-black']
+  const bgColor = bgColors[name.length % bgColors.length]
+  const textColor = textColors[name.length % textColors.length]
   
   const sizeClasses = {
     sm: 'h-8 w-8 text-xs',
@@ -35,33 +37,48 @@ function Avatar({ name, size = 'md' }: { name: string; size?: 'sm' | 'md' | 'lg'
   }
   
   return (
-    <div className={`${sizeClasses[size]} ${color} rounded-full flex items-center justify-center font-bold`}>
+    <div className={`${sizeClasses[size]} ${bgColor} ${textColor} rounded-full flex items-center justify-center font-bold border-2 border-black`}>
       {initials}
     </div>
   )
 }
 
 export function SettingsPage() {
-  const [members, setMembers] = useState(mockMembers)
+  const { team, updateTeamMember, removeTeamMember, addTeamMember } = useUiStore()
+  const [inviteEmail, setInviteEmail] = useState('')
   const [isAssigning, setIsAssigning] = useState(false)
 
+  function handleInvite() {
+    if (!inviteEmail.includes('@')) {
+      alert('Please enter a valid email address')
+      return
+    }
+
+    addTeamMember({
+      name: inviteEmail.split('@')[0],
+      email: inviteEmail,
+      role: 'other',
+    })
+
+    setInviteEmail('')
+  }
+
   function updateRole(memberId: string, newRole: TeamMember['role']) {
-    setMembers(members.map(m => 
-      m.id === memberId ? { ...m, role: newRole, roleLabel: roleOptions.find(r => r.value === newRole)?.label || '' } : m
-    ))
+    updateTeamMember(memberId, {
+      role: newRole,
+    })
   }
 
   function assignRolesWithAI() {
     setIsAssigning(true)
     setTimeout(() => {
-      const shuffled = [...members].sort(() => Math.random() - 0.5)
+      const shuffled = [...team.members].sort(() => Math.random() - 0.5)
       const roles: TeamMember['role'][] = ['leader', 'developer', 'designer', 'pitch']
-      const updated = shuffled.map((m, i) => ({
-        ...m,
-        role: roles[i % roles.length],
-        roleLabel: roleOptions.find(r => r.value === roles[i % roles.length])?.label || '',
-      }))
-      setMembers(updated)
+      shuffled.forEach((m, i) => {
+        updateTeamMember(m.id, {
+          role: roles[i % roles.length],
+        })
+      })
       setIsAssigning(false)
     }, 1500)
   }
@@ -80,59 +97,97 @@ export function SettingsPage() {
 
       <SectionCard title="Team Members" className="bg-white">
         <div className="space-y-3">
-          {members.map(member => (
-            <div key={member.id} className="flex flex-col gap-2 rounded-lg border-2 border-gray-200 p-3 md:flex-row md:items-center md:justify-between md:gap-4 md:p-4">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <Avatar name={member.name} size="md" />
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium text-sm truncate">{member.name}</p>
-                  <p className="text-xs text-gray-500 truncate">{member.email}</p>
+          {team.members.length === 0 ? (
+            <p className="text-sm text-gray-500 py-4">No team members yet. Add your first member below.</p>
+          ) : (
+            team.members.map((member) => (
+              <div
+                key={member.id}
+                className="flex flex-col gap-3 rounded-lg border-2 border-black p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-4"
+              >
+                <div className="flex items-center gap-3 min-w-0 flex-1">
+                   <Avatar name={member.name} size="md" />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-bold text-sm truncate">{member.name}</p>
+                    <p className="text-xs text-gray-600 truncate">{member.email}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                  {(() => {
+                    const RoleIcon = roleOptions.find((r) => r.value === member.role)?.icon || Star
+                    return <RoleIcon className="h-5 w-5 flex-shrink-0 text-black" />
+                  })()}
+                  <select
+                    value={member.role}
+                    onChange={(e) => updateRole(member.id, e.target.value as TeamMember['role'])}
+                    className="flex-1 sm:flex-none rounded-lg border-2 border-black px-2 py-1.5 font-bold text-sm appearance-none bg-white bg-no-repeat text-black"
+                    style={{
+                      backgroundImage:
+                        'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23000%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E")',
+                      paddingRight: '1.75rem',
+                      backgroundPosition: 'right 0.4rem center',
+                    }}
+                  >
+                    {roleOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => removeTeamMember(member.id)}
+                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border-2 border-black bg-white text-black hover:bg-red-100 hover:border-red-500 hover:text-red-600 transition-colors"
+                    title="Remove member"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 shrink-0">
-                {(() => {
-                  const RoleIcon = roleOptions.find(r => r.value === member.role)?.icon || Star
-                  return <RoleIcon className="h-5 w-5 flex-shrink-0" />
-                })()}
-                <select
-                  value={member.role}
-                  onChange={(e) => updateRole(member.id, e.target.value as TeamMember['role'])}
-                  className="rounded-lg border-2 border-black px-1.5 py-1 md:px-2 md:py-1.5 font-medium text-xs md:text-sm appearance-none bg-white bg-no-repeat flex-shrink-0 max-w-xs"
-                  style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23111%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E")', paddingRight: '1.5rem', backgroundPosition: 'right 0.4rem center' }}
-                >
-                  {roleOptions.map(opt => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </SectionCard>
 
       <SectionCard title="Add Team Member" className="bg-[#c7ff66]">
-        <div className="flex gap-2">
-          <Input placeholder="Email address" className="flex-1" />
-          <Button>Invite</Button>
+        <div className="space-y-3">
+          <div className="flex gap-2">
+            <Input
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleInvite()}
+              placeholder="Email address"
+              className="flex-1"
+            />
+            <Button onClick={handleInvite}>Invite</Button>
+          </div>
+          <p className="text-sm text-gray-600">Add a new team member by email address</p>
         </div>
-        <p className="mt-2 text-sm text-gray-600">Send an invite link to join your team</p>
       </SectionCard>
 
       <SectionCard title="Hackathon Info" className="bg-[#c7e7ff]">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div>
-            <label className="eyebrow block">Hackathon</label>
-            <p className="font-medium">HackMIT 2026</p>
+            <label className="eyebrow block mb-2">Hackathon Name</label>
+            <p className="font-medium text-lg">{team.hackathonName || 'Not set'}</p>
           </div>
           <div>
-            <label className="eyebrow block">Deadline</label>
-            <p className="font-medium">April 6, 2026, 6:00 PM</p>
+            <label className="eyebrow block mb-2">Deadline</label>
+            <p className="font-medium text-lg">
+              {team.endsAt
+                ? new Date(team.endsAt).toLocaleString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : 'Not set'}
+            </p>
           </div>
           <div>
-            <label className="eyebrow block">Project</label>
-            <p className="font-medium">HackLog - AI Team Assistant</p>
+            <label className="eyebrow block mb-2">Project Name</label>
+            <p className="font-medium text-lg">{team.name || 'Not set'}</p>
           </div>
         </div>
       </SectionCard>

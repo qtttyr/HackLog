@@ -126,3 +126,8 @@ button, input { font: inherit; }
   h2 { font-size: 1.3rem; }
   h3 { font-size: 1.1rem; }
 }
+
+/* Safe area inset support for mobile */
+nav.safe-area-inset-b {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
