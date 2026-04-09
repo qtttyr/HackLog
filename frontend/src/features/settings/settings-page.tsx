@@ -112,7 +112,7 @@ export function SettingsPage() {
                     <p className="text-xs text-gray-600 truncate">{member.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-end">
                   {(() => {
                     const RoleIcon = roleOptions.find((r) => r.value === member.role)?.icon || Star
                     return <RoleIcon className="h-5 w-5 flex-shrink-0 text-black" />
@@ -120,13 +120,7 @@ export function SettingsPage() {
                   <select
                     value={member.role}
                     onChange={(e) => updateRole(member.id, e.target.value as TeamMember['role'])}
-                    className="flex-1 sm:flex-none rounded-lg border-2 border-black px-2 py-1.5 font-bold text-sm appearance-none bg-white bg-no-repeat text-black"
-                    style={{
-                      backgroundImage:
-                        'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath fill=%22%23000%22 d=%22M1 1l5 5 5-5%22/%3E%3C/svg%3E")',
-                      paddingRight: '1.75rem',
-                      backgroundPosition: 'right 0.4rem center',
-                    }}
+                    className="rounded-lg border-2 border-black px-2 py-1 font-bold text-sm bg-white text-black md:px-2.5 md:py-1 md:text-sm whitespace-nowrap"
                   >
                     {roleOptions.map((opt) => (
                       <option key={opt.value} value={opt.value}>
@@ -136,7 +130,7 @@ export function SettingsPage() {
                   </select>
                   <button
                     onClick={() => removeTeamMember(member.id)}
-                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border-2 border-black bg-white text-black hover:bg-red-100 hover:border-red-500 hover:text-red-600 transition-colors"
+                    className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border-2 border-black bg-white text-black hover:bg-red-100 hover:border-red-500 hover:text-red-600 transition-colors md:h-7 md:w-7"
                     title="Remove member"
                   >
                     <Trash2 className="h-4 w-4" />
