@@ -7,26 +7,40 @@ export function useSession() {
   return useQuery({
     queryKey: ['session'],
     queryFn: async () => {
-      const { data } = await supabase.auth.getSession()
-      const token = data.session?.access_token
-      if (!token) return null
-      
-      // Try to verify with backend, but gracefully fallback if backend is unavailable
       try {
-        return await apiFetch<VerifyResponse>('/api/auth/verify', {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        })
-      } catch (error) {
-        // If backend is unavailable, use session info from Supabase auth
-        const user = data.session?.user
-        if (user) {
-          return {
-            id: user.id,
-            email: user.email ?? 'User',
-            is_valid: true,
-          }
+        const { data, error } = await supabase.auth.getSession()
+        
+        if (error) {
+          console.error('Session error:', error)
+          return null
         }
+        
+        const token = data.session?.access_token
+        if (!token) {
+          return null
+        }
+        
+        // Try to verify with backend, but gracefully fallback if backend is unavailable
+        try {
+          return await apiFetch<VerifyResponse>('/api/auth/verify', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        } catch (backendError) {
+          console.warn('Backend verification failed, using Supabase session:', backendError)
+          // If backend is unavailable, use session info from Supabase auth
+          const user = data.session?.user
+          if (user && user.email) {
+            return {
+              id: user.id,
+              email: user.email,
+              is_valid: true,
+            }
+          }
+          return null
+        }
+      } catch (err) {
+        console.error('Session fetch error:', err)
         return null
       }
     },

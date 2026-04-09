@@ -28,8 +28,19 @@ export function AuthPage() {
           setMessage(error.message)
         } else if (data.user) {
           setSessionEmail(email)
-          // Redirect to root - RootRoute will handle redirection
-          navigate('/')
+          
+          // Check if session is immediately available (depends on Supabase config)
+          const { data: sessionData } = await supabase.auth.getSession()
+          if (sessionData.session) {
+            // Session available, redirect to onboarding
+            navigate('/')
+          } else {
+            // No immediate session - might need email verification
+            // Show success message and keep them on auth page with option to login
+            setMessage('Account created! You can now login with your email and password.')
+            setMode('login')
+            setPassword('')
+          }
         }
       } else {
         const { error, data } = await supabase.auth.signInWithPassword({ email, password })
@@ -39,6 +50,8 @@ export function AuthPage() {
           setSessionEmail(email)
           // Redirect to root - RootRoute will handle redirection based on onboarding status
           navigate('/')
+        } else {
+          setMessage('Login failed. Please check your credentials.')
         }
       }
     } catch (err) {
