@@ -15,7 +15,7 @@ interface TeamMember {
 
 export function OnboardingPage() {
   const navigate = useNavigate()
-  const { team, createTeam, setHackathonInfo, addTeamMember } = useUiStore()
+  const { team, createTeam, setHackathonInfo, addTeamMember, setIsOnboarded } = useUiStore()
   
   const [step, setStep] = useState<Step>('team')
   const [mode, setModeLocal] = useState<'solo' | 'team'>('solo')
@@ -90,6 +90,8 @@ export function OnboardingPage() {
     } else if (step === 'idea') {
       setStep('ready')
     } else {
+      // Mark onboarding as completed in both store and localStorage (for backward compat)
+      setIsOnboarded(true)
       localStorage.setItem('onboarding_completed', 'true')
       navigate('/dashboard')
     }

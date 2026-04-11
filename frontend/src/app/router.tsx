@@ -11,9 +11,11 @@ import { RoadmapPage } from '../features/roadmap/roadmap-page'
 import { BrainstormPage } from '../features/brainstorm/brainstorm-page'
 import { SettingsPage } from '../features/settings/settings-page'
 import { useSession } from '../hooks/use-session'
+import { useUiStore } from '../store/ui-store'
 
 function RootRoute() {
   const { data: session, isLoading, isFetching } = useSession()
+  const isOnboarded = useUiStore((state) => state.isOnboarded)
 
   // Show loading while fetching session or refetching
   if (isLoading || isFetching) {
@@ -34,11 +36,10 @@ function RootRoute() {
     return <Navigate to="/auth" replace />
   }
 
-  console.log('[RootRoute] Session found for:', session.email)
+  console.log('[RootRoute] Session found for:', session.email, 'Onboarded:', isOnboarded)
 
-  // If logged in, check onboarding
-  const onboardingCompleted = localStorage.getItem('onboarding_completed')
-  if (!onboardingCompleted) {
+  // If logged in, check onboarding (use store instead of localStorage)
+  if (!isOnboarded) {
     console.log('[RootRoute] Onboarding not completed, redirecting to /onboarding')
     return <Navigate to="/onboarding" replace />
   }
@@ -64,16 +65,14 @@ function ProtectedRoute() {
 
 function OnboardingGuard() {
   const { data: session, isLoading } = useSession()
+  const isOnboarded = useUiStore((state) => state.isOnboarded)
 
   if (isLoading) {
     return null
   }
 
-  if (session) {
-    const onboardingCompleted = localStorage.getItem('onboarding_completed')
-    if (!onboardingCompleted) {
-      return <Navigate to="/onboarding" replace />
-    }
+  if (session && !isOnboarded) {
+    return <Navigate to="/onboarding" replace />
   }
 
   return <Outlet />

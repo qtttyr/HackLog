@@ -5,9 +5,11 @@ import type { TeamSnapshot, TaskStatus, TeamMember } from '../types/domain'
 type UiState = {
   mode: 'solo' | 'team'
   sessionEmail: string
+  isOnboarded: boolean  // NEW: Track if user completed onboarding
   team: TeamSnapshot
   setMode: (mode: 'solo' | 'team') => void
   setSessionEmail: (email: string) => void
+  setIsOnboarded: (value: boolean) => void  // NEW
   clearTeam: () => void
   createTeam: (name: string, hackathonName: string) => void
   joinTeam: (inviteCode: string) => void
@@ -43,10 +45,12 @@ export const useUiStore = create<UiState>()(
     (set) => ({
       mode: 'team',
       sessionEmail: '',
+      isOnboarded: false,  // NEW
       team: seed,
       setMode: (mode) => set({ mode }),
       setSessionEmail: (sessionEmail) => set({ sessionEmail }),
-      clearTeam: () => set({ team: seed, sessionEmail: '', mode: 'team' }),
+      setIsOnboarded: (isOnboarded) => set({ isOnboarded }),  // NEW
+      clearTeam: () => set({ team: seed, sessionEmail: '', mode: 'team', isOnboarded: false }),
       createTeam: (name, hackathonName) =>
         set((state) => ({ team: { ...state.team, name, hackathonName } })),
       joinTeam: (inviteCode) =>

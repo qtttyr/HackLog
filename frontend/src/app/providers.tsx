@@ -4,9 +4,18 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { queryClient } from '../lib/query-client'
 import { supabase } from '../lib/supabase'
+import { useUiStore } from '../store/ui-store'
 
 function AuthListener({ children }: PropsWithChildren) {
+  const setIsOnboarded = useUiStore((state) => state.setIsOnboarded)
+
   useEffect(() => {
+    // Initialize onboarding state from localStorage on app startup
+    const onboardingCompleted = localStorage.getItem('onboarding_completed')
+    if (onboardingCompleted === 'true') {
+      setIsOnboarded(true)
+    }
+
     // Listen for auth state changes and invalidate session query immediately
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Auth] State changed:', event, 'Session available:', !!session)
@@ -21,7 +30,7 @@ function AuthListener({ children }: PropsWithChildren) {
     return () => {
       subscription?.unsubscribe()
     }
-  }, [])
+  }, [setIsOnboarded])
 
   return <>{children}</>
 }
