@@ -33,6 +33,8 @@ export function AuthPage() {
           const { data: sessionData } = await supabase.auth.getSession()
           if (sessionData.session) {
             // Session available, redirect to onboarding
+            // Give time for auth listener to update session query
+            await new Promise(resolve => setTimeout(resolve, 500))
             navigate('/')
           } else {
             // No immediate session - might need email verification
@@ -48,6 +50,8 @@ export function AuthPage() {
           setMessage(error.message)
         } else if (data.session) {
           setSessionEmail(email)
+          // Give time for auth listener to update session query
+          await new Promise(resolve => setTimeout(resolve, 500))
           // Redirect to root - RootRoute will handle redirection based on onboarding status
           navigate('/')
         } else {

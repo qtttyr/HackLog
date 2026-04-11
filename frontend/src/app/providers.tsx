@@ -7,10 +7,15 @@ import { supabase } from '../lib/supabase'
 
 function AuthListener({ children }: PropsWithChildren) {
   useEffect(() => {
-    // Listen for auth state changes and invalidate session query
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      // When auth state changes, invalidate the session query to refetch
+    // Listen for auth state changes and invalidate session query immediately
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Auth] State changed:', event, 'Session available:', !!session)
+      
+      // Invalidate and refetch the session query immediately
       queryClient.invalidateQueries({ queryKey: ['session'] })
+      
+      // Force an immediate refetch
+      queryClient.refetchQueries({ queryKey: ['session'] })
     })
 
     return () => {

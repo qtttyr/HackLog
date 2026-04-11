@@ -13,10 +13,11 @@ import { SettingsPage } from '../features/settings/settings-page'
 import { useSession } from '../hooks/use-session'
 
 function RootRoute() {
-  const { data: session, isLoading } = useSession()
+  const { data: session, isLoading, isFetching } = useSession()
 
-  if (isLoading) {
-    // Show loading state while checking session
+  // Show loading while fetching session or refetching
+  if (isLoading || isFetching) {
+    console.log('[RootRoute] Session loading/fetching...')
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="space-y-4 text-center">
@@ -29,16 +30,21 @@ function RootRoute() {
 
   // If not logged in, go to auth
   if (!session) {
+    console.log('[RootRoute] No session, redirecting to /auth')
     return <Navigate to="/auth" replace />
   }
+
+  console.log('[RootRoute] Session found for:', session.email)
 
   // If logged in, check onboarding
   const onboardingCompleted = localStorage.getItem('onboarding_completed')
   if (!onboardingCompleted) {
+    console.log('[RootRoute] Onboarding not completed, redirecting to /onboarding')
     return <Navigate to="/onboarding" replace />
   }
 
   // If logged in and onboarded, go to dashboard
+  console.log('[RootRoute] All checks passed, redirecting to /dashboard')
   return <Navigate to="/dashboard" replace />
 }
 
